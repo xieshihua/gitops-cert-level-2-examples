@@ -14,9 +14,8 @@ spec:
               directories:
                 - path: application-sets/example-apps/*
           # cluster generator, 'child' #2
-          - clusters:
-              selector: *
-                
+          - clusters: {}
+        
   template:
     metadata:
       name: '{{path.basename}}-{{name}}'
@@ -29,3 +28,11 @@ spec:
       destination:
         server: '{{server}}'
         namespace: '{{path.basename}}'
+        
+      # Sync policy
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true  
+        automated: # automated sync by default retries failed attempts 5 times with following delays between attempts ( 5s, 10s, 20s, 40s, 80s ); retry controlled using `retry` field.
+          prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).
+          selfHeal: true # Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).
